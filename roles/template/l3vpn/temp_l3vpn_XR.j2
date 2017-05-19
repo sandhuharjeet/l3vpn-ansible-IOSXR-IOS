@@ -1,0 +1,32 @@
+{# start with a redistribute route-maps #}
+interface {{PE1.CE_facing_intf}}
+  description to {{PE1.Remote_CE_Name}}
+  vrf {{PE1.VRF}}
+  ipv4 address {{PE1.IP_Add}} {{PE1.mask}}
+
+
+router bgp 65000
+     vrf {{PE1.VRF}}
+      rd {{PE1.RD}}
+      address-family ipv4 unicast
+      !
+      neighbor {{PE1.neighbor}}
+       remote-as {{PE1.remote_as}}
+       update-source {{PE1.CE_facing_intf}}
+       address-family ipv4 unicast
+       !
+      !
+     !
+    !
+
+root
+vrf {{PE1.VRF}}
+     address-family ipv4 unicast
+      import route-target {{PE1.RD}}
+      !
+      export route-target {{PE1.RD}}
+      !
+     !
+    !
+
+

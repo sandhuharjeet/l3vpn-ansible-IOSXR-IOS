@@ -1,0 +1,8 @@
+[PEXR]
+172.16.1.201 type_os=XR
+172.16.1.211 type_os=XR
+[PEIOS]
+172.16.1.202 type_os=IOS
+172.16.1.222 type_os=IOS
+[P]
+172.16.1.200 type_os=XR

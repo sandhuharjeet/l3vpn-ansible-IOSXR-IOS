@@ -1,0 +1,12 @@
+---
+
+PE1: 
+  localAS: "65000"
+  VRF: "cust1" 
+  RD: "1:1" 
+  neighbor: "100.1.1.2"
+  CE_facing_intf: "GigabitEthernet0/0/0/1"
+  remote_as: "65111" 
+  IP_Add: "100.1.1.1" 
+  mask: "255.255.255.252"
+  Remote_CE_Name: "CE1"

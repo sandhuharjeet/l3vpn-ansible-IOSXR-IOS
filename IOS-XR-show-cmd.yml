@@ -1,0 +1,28 @@
+---
+
+- hosts: 172.16.1.201
+  remote_user: cisco
+  connection: local
+  gather_facts: no
+
+  vars_files:
+  - group_vars/passwords.yml
+  - group_vars/command.yml
+   
+
+  tasks:
+  - name : Show command collection for XR
+    iosxr_command:
+      provider:
+#        host: 172.16.1.201
+        username: '{{ ansible_ssh_user }}'
+        password: '{{ ansible_ssh_pass }}'
+      commands:
+      - sh run vrf cust1
+      - sh running-config interface gigabitEthernet 0/0/0/1
+      - sh running-config router bgp 65000 vrf cust1
+    register: show_command
+#  - debug: var=output.stdout_lines
+
+  - name: Dump BGP to jinja file
+    local_action: copy content={{ show_command.stdout}} dest=/home/harjeets/ansible-env/roles/bgp_conf/{{ inventory_hostname }}.j2

@@ -1,0 +1,58 @@
+{% for data in PE1 %}
+  {% if type_os == "XR" %}
+    router bgp 65000
+     vrf {{PE1.VRF}}
+      rd {{PE1.RD}}
+      address-family ipv4 unicast
+      !
+      neighbor {{PE1.neighbor}}
+       remote-as {{PE1.remote_as}}
+       update-source {{PE1.CE_facing_intf}}
+       address-family ipv4 unicast
+       !
+      !
+     !
+    !
+    
+    vrf {{PE1.VRF}}
+     address-family ipv4 unicast
+      import route-target {{PE1.RD}}
+      !
+      export route-target {{PE1.RD}}
+      !
+     !
+    !
+    
+    interface {{PE1.CE_facing_intf}}
+     description to {{PE1.Remote_CE_Name}}
+     vrf {{PE1.VRF}}
+     ipv4 address {{PE1.IP_Add}} {{PE1.mask}}
+    !
+    
+  {% endif %}
+
+  {% if type_os == "IOS" %}
+
+    ip vrf {{PE1.VRF}}
+     rd {{PE1.RD}}
+     route-target export {{PE1.RD}}
+     route-target import {{PE1.RD}}
+    !
+    !
+    interface {{PE1.CE_facing_intf}}
+     description to {{PE1.Remote_CE_Name}}
+     ip vrf forwarding {{PE1.VRF}}
+     ip address  {{PE1.IP_Add}} {{PE1.mask}}
+     !
+    router bgp 65000
+     !
+     address-family ipv4 vrf {{PE1.VRF}}
+      neighbor {{PE1.neighbor}} remote-as {{PE1.VRF}}
+      neighbor {{PE1.neighbor}} update-source {{PE1.CE_facing_intf}}
+      neighbor {{PE1.neighbor}} activate
+     exit-address-family
+    !
+    end 
+  {% endif %}
+{% endfor %}
+

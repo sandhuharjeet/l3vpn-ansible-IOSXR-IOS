@@ -1,0 +1,30 @@
+---
+
+- hosts: 172.16.1.201
+  remote_user: cisco
+  connection: local
+  gather_facts: no
+
+  vars_files:
+  - group_vars/passwords.yml
+  - group_vars/l3vpn_vars 
+
+  tasks:
+  - name: Config L3vpn if XR PE
+    iosxr_config:
+      provider:
+        host: 172.16.1.201
+        username: '{{ ansible_ssh_user }}'
+        password: '{{ ansible_ssh_pass }}'
+      src: roles/template/l3vpn/temp_l3vpn_XR.j2
+      backup: yes
+#      replace: line
+    when: type_os == "XR" 
+  
+
+  - name : Config L3vpn if IOS PE 
+    ios_config:
+      src: L3vpn.j2
+    when: type_os == "IOS"
+
+

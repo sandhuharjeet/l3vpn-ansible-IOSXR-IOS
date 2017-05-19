@@ -1,0 +1,186 @@
+
+
+Thu May 18 14:35:54.781 UTC
+Building configuration...
+!! IOS XR Configuration version = 6.1.2.05I
+!! Last configuration change at Thu May 18 14:09:19 2017 by CVAC
+!
+!  IOS-XR Config generated on 2017-05-16 16:47
+! by autonetkit_0.23.5
+hostname P
+service timestamps log datetime msec
+service timestamps debug datetime msec
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain name virl.info
+domain lookup disable
+username vagrant
+ group root-lr
+ group cisco-support
+ secret 5 $1$kc3b$03xDCDqGQs/gXFxMhlFYa.
+!
+username cisco
+ group root-lr
+ group cisco-support
+ password 7 030752180500
+!
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+tpa
+ address-family ipv4
+  update-source MgmtEth0/RP0/CPU0/0
+ !
+!
+line template vty
+ timestamp
+ exec-timeout 720 0
+!
+line console
+ exec-timeout 0 0
+!
+line default
+ exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+ipv4 access-list mpls-ldp
+ 10 permit ipv4 192.168.0.0 0.0.0.255 any
+!
+interface Loopback0
+ description Loopback
+ ipv4 address 192.168.0.7 255.255.255.255
+!
+interface MgmtEth0/RP0/CPU0/0
+ ipv4 address dhcp
+!
+interface GigabitEthernet0/0/0/0
+ description to PE1
+ ipv4 address 10.0.1.5 255.255.255.252
+!
+interface GigabitEthernet0/0/0/1
+ description to PE2
+ ipv4 address 10.0.1.9 255.255.255.252
+!
+interface GigabitEthernet0/0/0/2
+ description to PE11
+ ipv4 address 10.0.1.13 255.255.255.252
+!
+interface GigabitEthernet0/0/0/3
+ description to PE22
+ ipv4 address 10.0.1.25 255.255.255.252
+!
+interface preconfigure MgmtEth0/0/CPU0/0
+ description OOB Management
+ ! Configured on launch
+ vrf Mgmt-intf
+ ipv4 address 172.16.1.200 255.255.255.0
+!
+router static
+ address-family ipv4 unicast
+  0.0.0.0/0 MgmtEth0/RP0/CPU0/0 10.0.2.2
+ !
+!
+router isis xr
+ is-type level-1
+ net 49.0001.1721.1600.0001.00
+ log adjacency changes
+ address-family ipv4 unicast
+  metric-style wide
+  mpls traffic-eng level-1
+  mpls traffic-eng router-id Loopback0
+  mpls traffic-eng multicast-intact
+ !
+ interface Loopback0
+  address-family ipv4 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/0
+  address-family ipv4 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/1
+  address-family ipv4 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/2
+  address-family ipv4 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/3
+  address-family ipv4 unicast
+  !
+ !
+!
+router bgp 65000
+ address-family ipv4 unicast
+  additional-paths receive
+  additional-paths send
+ !
+ address-family vpnv4 unicast
+ !
+ address-family ipv4 mdt
+ !
+ neighbor-group iBGP-Clients
+  remote-as 65000
+  update-source Loopback0
+  address-family ipv4 unicast
+   route-reflector-client
+  !
+  address-family vpnv4 unicast
+   route-reflector-client
+  !
+  address-family ipv4 mdt
+   route-reflector-client
+  !
+ !
+ neighbor 192.168.0.2
+  use neighbor-group iBGP-Clients
+ !
+ neighbor 192.168.0.4
+  use neighbor-group iBGP-Clients
+ !
+ neighbor 192.168.0.5
+  use neighbor-group iBGP-Clients
+ !
+ neighbor 192.168.0.6
+  use neighbor-group iBGP-Clients
+ !
+!
+mpls ldp
+ router-id 192.168.0.7
+ address-family ipv4
+  label
+   local
+    allocate for mpls-ldp
+   !
+  !
+ !
+ interface GigabitEthernet0/0/0/0
+ !
+ interface GigabitEthernet0/0/0/1
+ !
+ interface GigabitEthernet0/0/0/2
+ !
+ interface GigabitEthernet0/0/0/3
+ !
+!
+grpc
+ port 57777
+!
+ssh server v2
+ssh server vrf default
+ssh server vrf Mgmt-intf
+end
+

@@ -1,0 +1,20 @@
+---
+- hosts: all
+  connection: ssh
+  remote_user: cisco
+  gather_facts: no
+  vars:
+    ansible_ssh_user: cisco
+    ansible_ssh_pass: cisco
+  
+  vars_files:
+  - group_vars/passwords.yml
+
+
+  tasks:
+  - name: Get all config from PEs    
+    raw: 'show running'
+    register: show_run
+  
+  - name: dump to file
+    local_action: copy content={{ show_run.stdout }} dest=roles/device_config/{{inventory_hostname}}.original

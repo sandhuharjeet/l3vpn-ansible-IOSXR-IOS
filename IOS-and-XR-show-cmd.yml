@@ -1,0 +1,34 @@
+---
+
+- hosts: all
+  remote_user: cisco
+  connection: local
+  gather_facts: no
+
+  vars_files:
+  - group_vars/passwords.yml
+  - group_vars/command.yml
+ 
+  tasks:
+  - name: Show command collection for XR
+    iosxr_command:
+      provider:
+        username: '{{ ansible_ssh_user }}'
+        password: '{{ ansible_ssh_pass }}'
+      commands:
+      - sh run vrf cust1    
+    when: type_os == "XR"
+    register: show_command
+ 
+  - debug: var=show_command.stdout_lines 
+
+  - name : show command collection for IOS  
+    ios_command:
+      commands:
+        - show version
+    when: type_os == "IOS"
+    register: show_command
+  
+  - debug: var=show_command.stdout_lines
+
+
